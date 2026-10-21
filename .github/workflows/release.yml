@@ -54,10 +54,17 @@ jobs:
           grep -qw eng langs.txt
 
       - run: npm run desktop:prepare
-      - run: npx electron-builder ${{ matrix.args }} --publish never
+      - name: Build the installer
+        # macOS runners sometimes fail to unmount the new disk image; one retry clears it.
+        run: npx electron-builder ${{ matrix.args }} --publish never || (sleep 20 && npx electron-builder ${{ matrix.args }} --publish never)
         env:
           # Not code-signed yet; see README for how friends open an unsigned app.
           CSC_IDENTITY_AUTO_DISCOVERY: "false"
+      - name: Start the packaged app and load its pages
+        run: |
+          # Hide the build folder so nothing can quietly depend on this machine's files.
+          mv .next/standalone .next/standalone-hidden
+          node scripts/smoke-packaged.mjs
       - uses: actions/upload-artifact@v4
         with:
           name: installer-${{ matrix.os }}
