@@ -17,7 +17,7 @@
     "desktop": "npm run desktop:prepare && electron .",
     "desktop:pack": "npm run desktop:prepare && electron-builder --mac dir",
     "desktop:dist": "npm run desktop:prepare && electron-builder",
-    "build:reader": "mkdir -p native/bin && swiftc -O native/mac-text-reader.swift -o native/bin/mac-text-reader",
+    "build:reader": "mkdir -p native/bin && swiftc -O -target $(uname -m)-apple-macos12 native/mac-text-reader.swift -o native/bin/mac-text-reader",
     "check:pages": "electron scripts/check-pages.cjs"
   },
   "dependencies": {

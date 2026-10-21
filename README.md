@@ -43,6 +43,7 @@ Get the latest version from the **[Releases page](../../releases/latest)**:
 **Apple Silicon**; "Processor: … Intel …" means **Intel**.
 
 Everything the app needs is included, including the tools that read PDFs and scanned pages.
+It runs on macOS 12 (Monterey) or newer, and Windows 10 or 11.
 
 **Mac:** open the `.dmg` and drag Study Coach into Applications. The app isn't signed by
 Apple yet, so the first time, **right-click** Study Coach in Applications, choose **Open**,

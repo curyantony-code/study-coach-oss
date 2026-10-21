@@ -18,7 +18,9 @@ if (fs.existsSync(path.join(root, "public"))) fs.cpSync(path.join(root, "public"
 if (process.platform === "darwin") {
   try {
     fs.mkdirSync(path.join(root, "native", "bin"), { recursive: true });
-    execFileSync("swiftc", ["-O", path.join(root, "native", "mac-text-reader.swift"), "-o", path.join(root, "native", "bin", "mac-text-reader")], { stdio: "inherit" });
+    // Built for macOS 12 (the oldest the app's Electron supports), not just the build machine's version.
+    const target = `${process.arch === "arm64" ? "arm64" : "x86_64"}-apple-macos12`;
+    execFileSync("swiftc", ["-O", "-target", target, path.join(root, "native", "mac-text-reader.swift"), "-o", path.join(root, "native", "bin", "mac-text-reader")], { stdio: "inherit" });
     fs.cpSync(path.join(root, "native", "bin"), path.join(standalone, "native", "bin"), { recursive: true });
   } catch (error) {
     console.warn("The Mac text reader was not built, so the app will fall back to Tesseract:", error.message);
