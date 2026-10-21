@@ -64,20 +64,10 @@ Study Coach works without AI. AI adds the tutor chat, teach-back grading, AI qui
 better card wording.
 
 **Study Coach does not come with an AI key.** Each person uses their own, so any AI costs are
-yours and your notes go only to the provider you pick. AI features stay switched off until you
-add a key. The cheapest option is free:
+yours and your notes go only to the provider you pick. To switch AI on, open **Settings → Set up
+AI** in the app, paste a key and click Save. There's a free option that takes about 3 minutes.
 
-1. Make a free key at [openrouter.ai/keys](https://openrouter.ai/keys) (free models cost nothing).
-2. Create a plain text file called `settings.env` in the app's data folder:
-   - **Mac:** `~/Library/Application Support/Study Coach/settings.env`
-   - **Windows:** `%APPDATA%\Study Coach\settings.env`
-3. Put this line in it, then restart the app:
-   ```
-   OPENROUTER_API_KEY=your-key-here
-   ```
-
-Other options (an Anthropic key, or a small local model through [Ollama](https://ollama.com))
-are listed in [`.env.example`](.env.example). Your key stays on your computer.
+👉 **[Step-by-step guide with screenshots](docs/ai-setup/README.md)**, written for complete beginners.
 
 ## Your data
 

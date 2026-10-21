@@ -55,6 +55,7 @@ export const MENU: MenuGroup[] = [
     id: "settings", label: "Settings", icon: "⚙️", href: "/vaults",
     items: [
       { href: "/vaults", label: "Vaults", icon: "🗂️" },
+      { href: "/setup-ai", label: "Set up AI", icon: "✨" },
       { href: "/build", label: "New course from files", icon: "📥", alpha: true },
       { href: "/backup", label: "Backup", icon: "💾", alpha: true },
     ],

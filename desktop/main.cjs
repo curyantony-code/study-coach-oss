@@ -18,6 +18,14 @@ if (process.env.STUDY_COACH_DATA_DIR) app.setPath("userData", path.resolve(proce
 
 let server = null;
 let window = null;
+/** Set while the engine is stopped on purpose to pick up new settings. */
+let restarting = false;
+const RESTART_DEBOUNCE_MS = 800;
+
+/** The user's own settings and AI keys: never bundled, written by the Set up AI page. */
+function settingsFile() {
+  return path.join(app.getPath("userData"), "settings.env");
+}
 
 function serverDir() {
   return app.isPackaged ? path.join(process.resourcesPath, "server") : path.join(__dirname, "..", ".next", "standalone");
@@ -58,14 +66,16 @@ function waitUntilUp(url, deadline, stopped) {
   });
 }
 
-async function startServer() {
+async function startServer(fixedPort) {
   const data = app.getPath("userData");
   fs.mkdirSync(path.join(data, "data"), { recursive: true });
   fs.mkdirSync(path.join(data, "logs"), { recursive: true });
-  const port = await freePort();
+  const port = fixedPort ?? (await freePort());
   const env = {
     ...process.env,
-    ...readEnvFile(path.join(data, "settings.env")),
+    ...readEnvFile(settingsFile()),
+    // The Set up AI page saves the user's own keys into this same file.
+    STUDY_SETTINGS_FILE: settingsFile(),
     NODE_ENV: "production",
     NEXT_TELEMETRY_DISABLED: "1",
     PORT: String(port),
@@ -87,7 +97,7 @@ async function startServer() {
       server = null;
       resolve(code);
       // While starting, the failure is reported once, by whoever is waiting for the start.
-      if (started && !app.isQuitting) {
+      if (started && !app.isQuitting && !restarting) {
         dialog.showErrorBox("Study Coach stopped", `The app's engine stopped unexpectedly (code ${code}). Open Study Coach again. Details are in ${path.join(data, "logs", "server.log")}.`);
         app.quit();
       }
@@ -144,6 +154,37 @@ function createWindow(url) {
   void window.loadURL(url);
 }
 
+/** Stops the engine and starts it again on the same address, so new keys take effect, then reloads the page. */
+async function restartServer(url) {
+  if (restarting) return;
+  restarting = true;
+  try {
+    const port = Number(new URL(url).port);
+    if (server) {
+      const exited = new Promise((resolve) => server.once("exit", resolve));
+      server.kill();
+      await exited;
+    }
+    await startServer(port);
+    window?.webContents.reload();
+  } catch (error) {
+    dialog.showErrorBox("Study Coach could not restart", `${String(error?.message ?? error)}\n\nClose Study Coach and open it again.`);
+    app.quit();
+  } finally {
+    restarting = false;
+  }
+}
+
+/** Restarts the engine whenever the settings file changes (a key saved or removed). */
+function watchSettings(url) {
+  let timer = null;
+  fs.watchFile(settingsFile(), { interval: 1000 }, (now, before) => {
+    if (now.mtimeMs === before.mtimeMs) return;
+    clearTimeout(timer);
+    timer = setTimeout(() => void restartServer(url), RESTART_DEBOUNCE_MS);
+  });
+}
+
 if (!app.requestSingleInstanceLock()) {
   app.quit();
 } else {
@@ -157,6 +198,7 @@ if (!app.requestSingleInstanceLock()) {
     try {
       appUrl = await startServer();
       createWindow(appUrl);
+      watchSettings(appUrl);
     } catch (error) {
       dialog.showErrorBox("Study Coach could not start", String(error?.message ?? error));
       app.quit();
@@ -166,6 +208,7 @@ if (!app.requestSingleInstanceLock()) {
   app.on("window-all-closed", () => { if (process.platform !== "darwin") app.quit(); });
   app.on("before-quit", () => {
     app.isQuitting = true;
+    fs.unwatchFile(settingsFile());
     server?.kill();
   });
 }

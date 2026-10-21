@@ -29,7 +29,9 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
+      # Some tests assume Mac/Linux paths; they run on the other builders and in CI.
       - run: npm test
+        if: runner.os != 'Windows'
       - run: npm run desktop:prepare
       - run: npx electron-builder ${{ matrix.args }} --publish never
         env:

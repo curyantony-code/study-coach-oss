@@ -44,6 +44,9 @@ export default async function VaultsPage() {
                 <span className="mt-1 block text-sm text-slate-600">Point Study Coach at the folder. It is only read, never changed.</span>
               </a>
             </div>
+            <p className="mt-4 text-sm text-slate-600">
+              Optional: <Link href="/setup-ai" className="font-semibold text-blue-700 underline hover:text-blue-900">set up AI</Link> for the tutor chat and AI quizzes. There&apos;s a free option, and it takes about 3 minutes.
+            </p>
           </div>
         )}
         <ul className="space-y-3">

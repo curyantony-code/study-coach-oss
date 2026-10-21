@@ -138,8 +138,7 @@ export default function TopicVideos(source: VideoSource) {
         {results && !results.configured && (
           <div className="mt-4 text-sm text-slate-700">
             <p className="mb-2">
-              Searching and ranking videos inside Study Coach needs your own free YouTube API key (<code className="rounded bg-slate-100 px-1">YOUTUBE_API_KEY</code> in the desktop app&apos;s{" "}
-              <code className="rounded bg-slate-100 px-1">settings.env</code>, or <code className="rounded bg-slate-100 px-1">.env.local</code> from source). Until then, these searches for “{results.topic.name}” open on YouTube:
+              Searching and ranking videos inside Study Coach needs your own free YouTube key: add it on <a href="/setup-ai" className={LINK}>Set up AI</a> (step 2). Until then, these searches for “{results.topic.name}” open on YouTube:
             </p>
             <ul className="list-disc pl-5 space-y-1">
               {results.links.map((link) => (
