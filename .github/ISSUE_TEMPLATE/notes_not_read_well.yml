@@ -1,0 +1,17 @@
+name: My notes aren't read well
+description: Cards, weeks or test dates come out wrong for your notes or course outline
+labels: [vault-format]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What went wrong?
+      description: e.g. "weeks were not found", "cards ask nothing", "exam date missing".
+    validations:
+      required: true
+  - type: textarea
+    id: sample
+    attributes:
+      label: A short sample
+      description: Paste a few lines of a note or outline that show the problem, with personal details removed. Your own notes only, no copied textbook or lecture material.
+      render: markdown

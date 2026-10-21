@@ -1,0 +1,477 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+:root {
+  --background: #f0f4ff;
+  --foreground: #1e293b;
+  --sidebar-bg: #f0f4ff;
+  --sidebar-fg: #64748b;
+  --sidebar-active: #3b82f6;
+  --accent: #3b82f6;
+  --accent-2: #6366f1;
+  --card-bg: #ffffff;
+  --border: #e2e8f0;
+  --muted: #64748b;
+  --yellow: #facc15;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+/* Card flip animation */
+.flip-card { perspective: 1200px; }
+.flip-inner {
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.flip-inner.flipped { transform: rotateY(180deg); }
+.flip-front, .flip-back {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.flip-back { transform: rotateY(180deg); }
+
+/* Fade in */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in { animation: fadeIn 0.25s ease forwards; }
+
+/* Shake for wrong answer */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%       { transform: translateX(-6px); }
+  40%       { transform: translateX(6px); }
+  60%       { transform: translateX(-4px); }
+  80%       { transform: translateX(4px); }
+}
+.animate-shake { animation: shake 0.4s ease; }
+
+/* Pulse for match success */
+@keyframes pop {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+.animate-pop { animation: pop 0.3s ease; }
+
+/* Mascot bounce */
+@keyframes mascotBounce {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-4px); }
+}
+.mascot-idle { animation: mascotBounce 2.5s ease-in-out infinite; }
+
+/* Mascot celebrate */
+@keyframes mascotCelebrate {
+  0%   { transform: rotate(0deg) scale(1); }
+  25%  { transform: rotate(-12deg) scale(1.15); }
+  50%  { transform: rotate(12deg) scale(1.2); }
+  75%  { transform: rotate(-8deg) scale(1.1); }
+  100% { transform: rotate(0deg) scale(1); }
+}
+.mascot-celebrate { animation: mascotCelebrate 0.6s ease; }
+
+/* Gradient text (blue/indigo) */
+.gradient-text {
+  background: linear-gradient(135deg, #3b82f6, #6366f1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Progress bar gradient */
+.progress-bar {
+  background: linear-gradient(90deg, #3b82f6, #6366f1);
+  border-radius: 9999px;
+  transition: width 0.4s ease;
+}
+
+/* Progress dots */
+.progress-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 9999px;
+  transition: all 0.2s ease;
+}
+.progress-dot-done   { background: #3b82f6; }
+.progress-dot-active { background: #6366f1; transform: scale(1.3); }
+.progress-dot-empty  { background: #e2e8f0; }
+
+/* Tile grid for match game */
+.tile-grid {
+  display: grid;
+  gap: 12px;
+}
+
+/* Streak flame pulse */
+@keyframes flamePulse {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.12); }
+}
+.flame-pulse { animation: flamePulse 1.4s ease-in-out infinite; }
+
+/* Math (KaTeX). Its layout assumes content-box sizing, which the app-wide border-box rule
+   above would otherwise break (overlapping sub/superscripts, missing overlines). */
+.katex,
+.katex * {
+  box-sizing: content-box;
+}
+.katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-block: 0.25rem;
+}
+
+/* Wide tables in notes scroll inside the note instead of stretching the page. */
+.prose table {
+  display: block;
+  overflow-x: auto;
+}
+
+/* A formula too long for the screen scrolls inside its own line instead of widening the page. */
+.prose p,
+.prose li,
+.prose td {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+.math-text {
+  display: inline-block;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  vertical-align: top;
+}
+
+/* Map: notes respond to hover and keyboard focus without moving the layout. */
+.map-node-dot {
+  transition: filter 150ms ease-out;
+}
+.map-node:hover .map-node-dot {
+  filter: brightness(0.9);
+}
+.map-node:focus-visible .map-node-dot {
+  stroke: #0f172a;
+  stroke-width: 4;
+}
+@media (prefers-reduced-motion: reduce) {
+  .map-node-dot {
+    transition: none;
+  }
+}
+
+/* Library notes: room to read. */
+.note-prose :where(h2) {
+  margin-top: 3.25rem;
+  padding-top: 1.75rem;
+  border-top: 1px solid #e2e8f0;
+  scroll-margin-top: 6rem;
+}
+.note-prose :where(h2:first-child) {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+.note-prose :where(h3) {
+  margin-top: 2.5rem;
+  scroll-margin-top: 6rem;
+}
+.note-prose :where(p, li) {
+  line-height: 1.8;
+}
+.note-prose :where(li) {
+  margin-block: 0.4rem;
+}
+.note-prose :where(table) {
+  margin-block: 1.75rem;
+}
+.note-prose :where(th, td) {
+  padding: 0.6rem 0.9rem;
+}
+.note-prose :where(hr) {
+  margin-block: 2.5rem;
+}
+
+/* A worked problem: question, formula, then the solution folded away. */
+.problem-card {
+  margin: 1rem 0 2.5rem;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid #e2e8f0;
+  border-left: 4px solid #3b82f6;
+  border-radius: 1rem;
+  background: #f8fafc;
+}
+.problem-card > :first-child {
+  margin-top: 0;
+}
+.problem-card > :last-child {
+  margin-bottom: 0;
+}
+.problem-label {
+  margin: 0 0 0.25rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+.problem-note {
+  margin: 0 0 0.75rem;
+  font-size: 0.85rem;
+  color: #64748b;
+}
+.problem-formula {
+  margin: 1.25rem 0;
+  padding: 0.9rem 1.1rem;
+  border: 1px solid #fde68a;
+  border-radius: 0.75rem;
+  background: #fffbeb;
+}
+.problem-formula > :last-child {
+  margin-bottom: 0;
+}
+.problem-solution {
+  margin-top: 1.25rem;
+  border-top: 1px dashed #cbd5e1;
+  padding-top: 1rem;
+}
+.problem-solution > summary {
+  display: inline-block;
+  cursor: pointer;
+  padding: 0.45rem 0.9rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.75rem;
+  background: #ffffff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1e293b;
+  list-style: none;
+}
+.problem-solution > summary::-webkit-details-marker {
+  display: none;
+}
+.problem-solution > summary:hover {
+  border-color: #3b82f6;
+  background: #eff6ff;
+}
+.problem-solution > summary:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+.problem-solution[open] > summary {
+  margin-bottom: 1rem;
+  color: #475569;
+}
+.problem-solution[open] > summary::after {
+  content: " (shown)";
+  font-weight: 400;
+}
+
+/* The textbook's full wording of a problem, shown in place of the note's summary. */
+.problem-original > p {
+  margin: 0 0 0.6rem;
+}
+.problem-original > .problem-source {
+  margin-top: 0.9rem;
+  font-size: 0.78rem;
+  color: #64748b;
+}
+
+
+/* ── Dark theme ─────────────────────────────────────────────────────────────
+   The whole app is written with Tailwind's palette classes. In dark mode the palette itself is
+   redefined here: neutral shades are flipped (light surfaces become dark, dark text becomes
+   light), pale tints become deep ones and deep text colours become pale. Mid shades, which
+   carry buttons with white text, stay as they are. `data-theme` is set on <html> by the server,
+   from the theme cookie (see app/layout.tsx and lib/theme.ts). */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --surface: #151c2c;
+  --background: #0b1120;
+  --foreground: #e2e8f0;
+  --sidebar-bg: #0e1526;
+  --sidebar-fg: #94a3b8;
+  --card-bg: var(--surface);
+  --border: #2e3a52;
+  --muted: #94a3b8;
+
+  --color-slate-50: #1b2436;
+  --color-slate-100: #222c40;
+  --color-slate-200: #2e3a52;
+  --color-slate-300: #40506c;
+  --color-slate-400: #8493ad;
+  --color-slate-500: #9aa8bd;
+  --color-slate-600: #b4c0d3;
+  --color-slate-700: #cbd5e1;
+  --color-slate-800: #e2e8f0;
+  --color-slate-900: #f1f5f9;
+  --color-slate-950: #f8fafc;
+  --color-gray-50: #1b2436;
+  --color-gray-100: #222c40;
+  --color-gray-200: #2e3a52;
+  --color-gray-500: #9aa8bd;
+  --color-gray-700: #cbd5e1;
+  --color-gray-900: #f1f5f9;
+
+  --color-blue-50: color-mix(in oklab, #3b82f6 13%, var(--surface));
+  --color-blue-100: color-mix(in oklab, #3b82f6 21%, var(--surface));
+  --color-blue-200: color-mix(in oklab, #3b82f6 34%, var(--surface));
+  --color-blue-300: color-mix(in oklab, #3b82f6 55%, var(--surface));
+  --color-blue-700: color-mix(in oklab, #3b82f6 58%, white);
+  --color-blue-800: color-mix(in oklab, #3b82f6 42%, white);
+  --color-blue-900: color-mix(in oklab, #3b82f6 28%, white);
+  --color-indigo-50: color-mix(in oklab, #6366f1 13%, var(--surface));
+  --color-indigo-100: color-mix(in oklab, #6366f1 21%, var(--surface));
+  --color-indigo-200: color-mix(in oklab, #6366f1 34%, var(--surface));
+  --color-indigo-300: color-mix(in oklab, #6366f1 55%, var(--surface));
+  --color-indigo-700: color-mix(in oklab, #6366f1 58%, white);
+  --color-indigo-800: color-mix(in oklab, #6366f1 42%, white);
+  --color-indigo-900: color-mix(in oklab, #6366f1 28%, white);
+  --color-violet-50: color-mix(in oklab, #8b5cf6 13%, var(--surface));
+  --color-violet-100: color-mix(in oklab, #8b5cf6 21%, var(--surface));
+  --color-violet-200: color-mix(in oklab, #8b5cf6 34%, var(--surface));
+  --color-violet-300: color-mix(in oklab, #8b5cf6 55%, var(--surface));
+  --color-violet-700: color-mix(in oklab, #8b5cf6 58%, white);
+  --color-violet-800: color-mix(in oklab, #8b5cf6 42%, white);
+  --color-violet-900: color-mix(in oklab, #8b5cf6 28%, white);
+  --color-purple-50: color-mix(in oklab, #a855f7 13%, var(--surface));
+  --color-purple-100: color-mix(in oklab, #a855f7 21%, var(--surface));
+  --color-purple-200: color-mix(in oklab, #a855f7 34%, var(--surface));
+  --color-purple-300: color-mix(in oklab, #a855f7 55%, var(--surface));
+  --color-purple-700: color-mix(in oklab, #a855f7 58%, white);
+  --color-purple-800: color-mix(in oklab, #a855f7 42%, white);
+  --color-purple-900: color-mix(in oklab, #a855f7 28%, white);
+  --color-rose-50: color-mix(in oklab, #f43f5e 13%, var(--surface));
+  --color-rose-100: color-mix(in oklab, #f43f5e 21%, var(--surface));
+  --color-rose-200: color-mix(in oklab, #f43f5e 34%, var(--surface));
+  --color-rose-300: color-mix(in oklab, #f43f5e 55%, var(--surface));
+  --color-rose-700: color-mix(in oklab, #f43f5e 58%, white);
+  --color-rose-800: color-mix(in oklab, #f43f5e 42%, white);
+  --color-rose-900: color-mix(in oklab, #f43f5e 28%, white);
+  --color-red-50: color-mix(in oklab, #ef4444 13%, var(--surface));
+  --color-red-100: color-mix(in oklab, #ef4444 21%, var(--surface));
+  --color-red-200: color-mix(in oklab, #ef4444 34%, var(--surface));
+  --color-red-300: color-mix(in oklab, #ef4444 55%, var(--surface));
+  --color-red-700: color-mix(in oklab, #ef4444 58%, white);
+  --color-red-800: color-mix(in oklab, #ef4444 42%, white);
+  --color-red-900: color-mix(in oklab, #ef4444 28%, white);
+  --color-pink-50: color-mix(in oklab, #ec4899 13%, var(--surface));
+  --color-pink-100: color-mix(in oklab, #ec4899 21%, var(--surface));
+  --color-pink-200: color-mix(in oklab, #ec4899 34%, var(--surface));
+  --color-pink-300: color-mix(in oklab, #ec4899 55%, var(--surface));
+  --color-pink-700: color-mix(in oklab, #ec4899 58%, white);
+  --color-pink-800: color-mix(in oklab, #ec4899 42%, white);
+  --color-pink-900: color-mix(in oklab, #ec4899 28%, white);
+  --color-amber-50: color-mix(in oklab, #f59e0b 13%, var(--surface));
+  --color-amber-100: color-mix(in oklab, #f59e0b 21%, var(--surface));
+  --color-amber-200: color-mix(in oklab, #f59e0b 34%, var(--surface));
+  --color-amber-300: color-mix(in oklab, #f59e0b 55%, var(--surface));
+  --color-amber-700: color-mix(in oklab, #f59e0b 58%, white);
+  --color-amber-800: color-mix(in oklab, #f59e0b 42%, white);
+  --color-amber-900: color-mix(in oklab, #f59e0b 28%, white);
+  --color-yellow-50: color-mix(in oklab, #eab308 13%, var(--surface));
+  --color-yellow-100: color-mix(in oklab, #eab308 21%, var(--surface));
+  --color-yellow-200: color-mix(in oklab, #eab308 34%, var(--surface));
+  --color-yellow-300: color-mix(in oklab, #eab308 55%, var(--surface));
+  --color-yellow-700: color-mix(in oklab, #eab308 58%, white);
+  --color-yellow-800: color-mix(in oklab, #eab308 42%, white);
+  --color-yellow-900: color-mix(in oklab, #eab308 28%, white);
+  --color-orange-50: color-mix(in oklab, #f97316 13%, var(--surface));
+  --color-orange-100: color-mix(in oklab, #f97316 21%, var(--surface));
+  --color-orange-200: color-mix(in oklab, #f97316 34%, var(--surface));
+  --color-orange-300: color-mix(in oklab, #f97316 55%, var(--surface));
+  --color-orange-700: color-mix(in oklab, #f97316 58%, white);
+  --color-orange-800: color-mix(in oklab, #f97316 42%, white);
+  --color-orange-900: color-mix(in oklab, #f97316 28%, white);
+  --color-emerald-50: color-mix(in oklab, #10b981 13%, var(--surface));
+  --color-emerald-100: color-mix(in oklab, #10b981 21%, var(--surface));
+  --color-emerald-200: color-mix(in oklab, #10b981 34%, var(--surface));
+  --color-emerald-300: color-mix(in oklab, #10b981 55%, var(--surface));
+  --color-emerald-700: color-mix(in oklab, #10b981 58%, white);
+  --color-emerald-800: color-mix(in oklab, #10b981 42%, white);
+  --color-emerald-900: color-mix(in oklab, #10b981 28%, white);
+  --color-green-50: color-mix(in oklab, #22c55e 13%, var(--surface));
+  --color-green-100: color-mix(in oklab, #22c55e 21%, var(--surface));
+  --color-green-200: color-mix(in oklab, #22c55e 34%, var(--surface));
+  --color-green-300: color-mix(in oklab, #22c55e 55%, var(--surface));
+  --color-green-700: color-mix(in oklab, #22c55e 58%, white);
+  --color-green-800: color-mix(in oklab, #22c55e 42%, white);
+  --color-green-900: color-mix(in oklab, #22c55e 28%, white);
+  --color-teal-50: color-mix(in oklab, #14b8a6 13%, var(--surface));
+  --color-teal-100: color-mix(in oklab, #14b8a6 21%, var(--surface));
+  --color-teal-200: color-mix(in oklab, #14b8a6 34%, var(--surface));
+  --color-teal-300: color-mix(in oklab, #14b8a6 55%, var(--surface));
+  --color-teal-700: color-mix(in oklab, #14b8a6 58%, white);
+  --color-teal-800: color-mix(in oklab, #14b8a6 42%, white);
+  --color-teal-900: color-mix(in oklab, #14b8a6 28%, white);
+  --color-sky-50: color-mix(in oklab, #0ea5e9 13%, var(--surface));
+  --color-sky-100: color-mix(in oklab, #0ea5e9 21%, var(--surface));
+  --color-sky-200: color-mix(in oklab, #0ea5e9 34%, var(--surface));
+  --color-sky-300: color-mix(in oklab, #0ea5e9 55%, var(--surface));
+  --color-sky-700: color-mix(in oklab, #0ea5e9 58%, white);
+  --color-sky-800: color-mix(in oklab, #0ea5e9 42%, white);
+  --color-sky-900: color-mix(in oklab, #0ea5e9 28%, white);
+  --color-cyan-50: color-mix(in oklab, #06b6d4 13%, var(--surface));
+  --color-cyan-100: color-mix(in oklab, #06b6d4 21%, var(--surface));
+  --color-cyan-200: color-mix(in oklab, #06b6d4 34%, var(--surface));
+  --color-cyan-300: color-mix(in oklab, #06b6d4 55%, var(--surface));
+  --color-cyan-700: color-mix(in oklab, #06b6d4 58%, white);
+  --color-cyan-800: color-mix(in oklab, #06b6d4 42%, white);
+  --color-cyan-900: color-mix(in oklab, #06b6d4 28%, white);
+}
+
+/* White is both "paper" and "text on a coloured button": only the paper turns dark. */
+:root[data-theme="dark"] :is(.bg-white, .bg-white\/95, .hover\:bg-white:hover) {
+  background-color: var(--surface);
+}
+:root[data-theme="dark"] ::-webkit-scrollbar-thumb { background: #40506c; }
+:root[data-theme="dark"] ::-webkit-scrollbar-thumb:hover { background: #5b6c8a; }
+:root[data-theme="dark"] .progress-dot-empty { background: #2e3a52; }
+:root[data-theme="dark"] .map-node:focus-visible .map-node-dot { stroke: #f1f5f9; }
+:root[data-theme="dark"] .gradient-text { background-image: linear-gradient(135deg, #60a5fa, #a5b4fc); }
+
+/* Notes: the typography plugin carries its own colours. */
+:root[data-theme="dark"] .prose {
+  --tw-prose-body: #cbd5e1;
+  --tw-prose-headings: #f1f5f9;
+  --tw-prose-lead: #b4c0d3;
+  --tw-prose-links: #93c5fd;
+  --tw-prose-bold: #f1f5f9;
+  --tw-prose-counters: #9aa8bd;
+  --tw-prose-bullets: #5b6c8a;
+  --tw-prose-hr: #2e3a52;
+  --tw-prose-quotes: #e2e8f0;
+  --tw-prose-quote-borders: #40506c;
+  --tw-prose-captions: #9aa8bd;
+  --tw-prose-code: #f1f5f9;
+  --tw-prose-pre-code: #e2e8f0;
+  --tw-prose-pre-bg: #0b1120;
+  --tw-prose-th-borders: #40506c;
+  --tw-prose-td-borders: #2e3a52;
+}
+:root[data-theme="dark"] .problem-card { border-color: #2e3a52; border-left-color: #3b82f6; background: #1b2436; }
+:root[data-theme="dark"] :is(.problem-label, .problem-note, .problem-original > .problem-source) { color: #9aa8bd; }
+:root[data-theme="dark"] .problem-formula { border-color: #6b5312; background: #2a2412; }
+:root[data-theme="dark"] .problem-solution { border-top-color: #40506c; }
+:root[data-theme="dark"] .problem-solution > summary { border-color: #40506c; background: var(--surface); color: #e2e8f0; }
+:root[data-theme="dark"] .problem-solution > summary:hover { border-color: #3b82f6; background: #1c2a47; }
+:root[data-theme="dark"] .problem-solution[open] > summary { color: #b4c0d3; }

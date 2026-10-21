@@ -1,0 +1,42 @@
+# Study Coach in Docker.
+#
+#   docker compose up -d --build     start (first run builds the image)
+#   docker compose down              stop
+#   then open http://localhost:3000  (or the STUDY_COACH_PORT you set)
+#
+# Settings come from two optional files next to this one:
+#   .env        — STUDY_COACH_PORT, VAULTS_DIR, COURSES_DIR and BACKUP_DIR (read by Docker Compose itself)
+#   .env.local  — ANTHROPIC_API_KEY etc. (passed into the app)
+services:
+  study-coach:
+    build: .
+    image: study-coach:local
+    container_name: study-coach
+    restart: unless-stopped
+    ports:
+      # 127.0.0.1 keeps the app reachable from this computer only, never the network.
+      - "127.0.0.1:${STUDY_COACH_PORT:-3000}:3000"
+    env_file:
+      - path: .env.local
+        required: false
+    environment:
+      # Lets the offline fallback reach an Ollama server running on this computer.
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://host.docker.internal:11434/v1}
+      # Where "New course from files" creates courses (see the matching volume below).
+      STUDY_COURSES_DIR: ${COURSES_DIR:-${HOME}/Documents/Study Coach Vaults}
+    volumes:
+      # Progress database and vault list. Same file the non-Docker app uses.
+      - ./data:/app/data
+      # Your vaults, read-only, at the SAME path they have on this computer, so the
+      # vaults you already added keep working and keep their progress.
+      # To let the app save study.yml into a vault, change ":ro" to ":rw" (you still have
+      # to switch on "Allow writing" for that vault and confirm each save in the app).
+      - "${VAULTS_DIR:-${HOME}/Documents}:${VAULTS_DIR:-${HOME}/Documents}:ro"
+      # Courses built from your files are created here, at the SAME path they have on this
+      # computer, so they open in Obsidian and in the non-Docker app too. Writable: this is
+      # the one place the app creates folders. Change it with COURSES_DIR in .env.
+      - "${COURSES_DIR:-${HOME}/Documents/Study Coach Vaults}:${COURSES_DIR:-${HOME}/Documents/Study Coach Vaults}"
+      # Optional: a cloud-drive folder for automatic backups, at the SAME path it has on this
+      # computer, so the folder chosen on the Backup page works here too. Set BACKUP_DIR in .env.
+      # Without it this mounts the app's own backups folder, which changes nothing.
+      - "${BACKUP_DIR:-./data/backups}:${BACKUP_DIR:-/app/data/backups}"
