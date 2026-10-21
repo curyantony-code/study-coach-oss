@@ -57,5 +57,6 @@ copyrighted.
 ## Releasing (maintainers)
 
 Bump `version` in `package.json`, then push a tag such as `v0.2.0`. The **Release** workflow
-builds the Mac (Apple silicon and Intel) and Windows installers and attaches them to a draft
-GitHub release. Check the draft, then publish it.
+builds the Mac (Apple Silicon and Intel) and Windows installers, bundles Poppler and Tesseract
+from conda-forge into them (`scripts/bundle-tools.mjs`, with a THIRD-PARTY-NOTICES file), and
+attaches them to a draft GitHub release. Check the draft, then publish it.

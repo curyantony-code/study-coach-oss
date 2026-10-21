@@ -30,4 +30,10 @@ for (const leftover of ["data", "desktop", "scripts", "tests", "dist", "coverage
 for (const name of fs.readdirSync(standalone)) if (/^\.env(\..+)?$/.test(name)) fs.rmSync(path.join(standalone, name), { force: true });
 const leaks = scanForKeys(standalone);
 if (leaks.length > 0) throw new Error(`Refusing to package an app that carries keys or settings:\n${leaks.join("\n")}`);
+// Bundled PDF tools (scripts/bundle-tools.mjs). Without them the app still runs and uses any installed copy.
+const tools = path.join(root, "vendor", "tools", "bin");
+if (!fs.existsSync(tools)) {
+  fs.mkdirSync(tools, { recursive: true });
+  console.warn("No bundled PDF tools in vendor/tools: this build relies on Poppler and Tesseract being installed. Release builds bundle them.");
+}
 console.log(`Ready: ${standalone}`);

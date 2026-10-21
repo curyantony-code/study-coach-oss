@@ -35,9 +35,14 @@ Get the latest version from the **[Releases page](../../releases/latest)**:
 
 | Your computer | Download |
 |---|---|
-| Mac with Apple silicon (M1 or newer) | `Study-Coach-…-mac-arm64.dmg` |
-| Mac with Intel | `Study-Coach-…-mac-x64.dmg` |
-| Windows 10/11 | `Study-Coach-…-windows-setup.exe` |
+| **Mac with Apple Silicon** (M1, M2, M3, M4 or newer) | `Study-Coach-…-Mac-Apple-Silicon.dmg` |
+| **Mac with an Intel processor** (most Macs from before 2021) | `Study-Coach-…-Mac-Intel.dmg` |
+| **Windows 10 or 11** | `Study-Coach-…-Windows-Setup.exe` |
+
+**Which Mac do I have?** Click the Apple menu  → **About This Mac**. "Chip: Apple M…" means
+**Apple Silicon**; "Processor: … Intel …" means **Intel**.
+
+Everything the app needs is included, including the tools that read PDFs and scanned pages.
 
 **Mac:** open the `.dmg` and drag Study Coach into Applications. The app isn't signed by
 Apple yet, so the first time, **right-click** Study Coach in Applications, choose **Open**,
@@ -46,17 +51,6 @@ click **Open Anyway**.
 
 **Windows:** run the installer. If SmartScreen warns you, click **More info → Run anyway**.
 The app isn't code-signed yet, which is why Windows asks.
-
-### Reading scanned PDFs (optional)
-
-Text PDFs and scans need the free Poppler and Tesseract tools:
-
-- **Mac:** install [Homebrew](https://brew.sh), then run `brew install poppler tesseract`
-  (on a Mac, scanned pages are read with the Mac's own text reader; Tesseract is the fallback)
-- **Windows:** install [Poppler](https://github.com/oschwartz10612/poppler-windows/releases)
-  and [Tesseract](https://github.com/UB-Mannheim/tesseract/wiki), and add both to your PATH
-
-Markdown and plain-text notes need nothing extra.
 
 ### AI features (optional)
 

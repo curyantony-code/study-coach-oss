@@ -1,6 +1,6 @@
 {
   "name": "study-coach",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "productName": "Study Coach",
   "description": "Adaptive study app that turns your class notes into flashcards, quizzes and a study plan",
   "license": "MIT",
@@ -90,7 +90,7 @@
         }
       ],
       "identity": null,
-      "artifactName": "Study-Coach-${version}-mac-${arch}.${ext}"
+      "artifactName": "Study-Coach-${version}-Mac-Apple-Silicon.${ext}"
     },
     "win": {
       "target": [
@@ -105,9 +105,18 @@
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
-      "artifactName": "Study-Coach-${version}-windows-setup.${ext}"
+      "artifactName": "Study-Coach-${version}-Windows-Setup.${ext}"
     },
     "afterPack": "scripts/desktop-after-pack.cjs",
-    "publish": null
+    "publish": null,
+    "extraResources": [
+      {
+        "from": "vendor/tools",
+        "to": "tools",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ]
   }
 }

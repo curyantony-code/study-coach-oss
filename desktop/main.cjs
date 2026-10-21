@@ -27,6 +27,11 @@ function settingsFile() {
   return path.join(app.getPath("userData"), "settings.env");
 }
 
+/** The PDF tools (Poppler) and scanned-page reader (Tesseract) shipped inside the app. */
+function toolsDir() {
+  return app.isPackaged ? path.join(process.resourcesPath, "tools") : path.join(__dirname, "..", "vendor", "tools");
+}
+
 function serverDir() {
   return app.isPackaged ? path.join(process.resourcesPath, "server") : path.join(__dirname, "..", ".next", "standalone");
 }
@@ -82,7 +87,9 @@ async function startServer(fixedPort) {
     HOSTNAME: HOST,
     // Progress lives in the user's own app-data folder, never inside the app itself.
     STUDY_DB_PATH: path.join(data, "data", "study.db"),
-    PATH: [process.env.PATH, ...EXTRA_PATHS].filter(Boolean).join(path.delimiter),
+    // The bundled tools come first, so the app never depends on what else is installed.
+    PATH: [path.join(toolsDir(), "bin"), process.env.PATH, ...EXTRA_PATHS].filter(Boolean).join(path.delimiter),
+    ...(fs.existsSync(path.join(toolsDir(), "share", "tessdata")) ? { TESSDATA_PREFIX: path.join(toolsDir(), "share", "tessdata") } : {}),
   };
   const logFile = path.join(data, "logs", "server.log");
   // The log starts afresh once it has grown large, so it never fills the disk.

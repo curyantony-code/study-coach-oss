@@ -49,3 +49,7 @@ next-env.d.ts
 
 # compiled text reader (npm run build:reader)
 /native/bin/
+
+# PDF tools bundled into the desktop app (npm run bundle-tools / release workflow)
+/vendor/
+/.tools-env/

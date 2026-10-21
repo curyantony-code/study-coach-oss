@@ -15,13 +15,16 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: macos-15          # Apple silicon
-            args: --mac dmg --arm64
+          - os: macos-15          # Apple silicon (M1 and newer)
+            args: --mac dmg --arm64 '-c.mac.artifactName=Study-Coach-${version}-Mac-Apple-Silicon.${ext}'
           - os: macos-15-intel    # Intel Macs (the Mac text reader is built for the runner's chip)
-            args: --mac dmg --x64
+            args: --mac dmg --x64 '-c.mac.artifactName=Study-Coach-${version}-Mac-Intel.${ext}'
           - os: windows-latest
             args: --win nsis --x64
     runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -32,6 +35,24 @@ jobs:
       # Some tests assume Mac/Linux paths; they run on the other builders and in CI.
       - run: npm test
         if: runner.os != 'Windows'
+
+      # PDF tools travel inside the app, so friends install nothing else.
+      - uses: mamba-org/setup-micromamba@v2
+        with:
+          environment-name: tools
+          create-args: -c conda-forge poppler tesseract
+          init-shell: none
+          cache-environment: true
+      - name: Bundle Poppler and Tesseract
+        run: micromamba run -n tools node scripts/bundle-tools.mjs
+      - name: Check the bundled tools run on their own
+        run: |
+          T="$PWD/vendor/tools"
+          if [ "$RUNNER_OS" = "Windows" ]; then BASEPATH="$T/bin:/c/Windows/System32"; else BASEPATH="$T/bin:/usr/bin:/bin"; fi
+          for tool in pdftotext pdfinfo pdftoppm pdftohtml pdfimages; do env -i SYSTEMROOT="${SYSTEMROOT:-}" PATH="$BASEPATH" "$tool" -v 2>&1 | head -1; done
+          env -i SYSTEMROOT="${SYSTEMROOT:-}" PATH="$BASEPATH" TESSDATA_PREFIX="$T/share/tessdata" tesseract --list-langs 2>&1 | tee langs.txt
+          grep -qw eng langs.txt
+
       - run: npm run desktop:prepare
       - run: npx electron-builder ${{ matrix.args }} --publish never
         env:
@@ -52,6 +73,7 @@ jobs:
     permissions:
       contents: write
     steps:
+      - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
           path: installers
@@ -59,5 +81,6 @@ jobs:
       - uses: softprops/action-gh-release@v2
         with:
           draft: true
+          body_path: .github/release-notes.md
           generate_release_notes: true
           files: installers/*
