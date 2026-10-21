@@ -1,6 +1,7 @@
 // The Claude path for the tutor, through the official Anthropic SDK.
 // Ollama and OpenRouter stay in lib/claude.ts (they speak a different API).
 import Anthropic from "@anthropic-ai/sdk";
+import { checkOwnKey } from "@/lib/ai/keys";
 
 /** Model ids come from the environment so they can change without a code edit. */
 export const MODEL_MAIN = process.env.MODEL_MAIN || "claude-opus-5-5";
@@ -33,9 +34,9 @@ export class ClaudeUnreachableError extends Error {}
 
 /** Turns an SDK error into a sentence a student can act on. */
 export function describeClaudeError(error: unknown): string {
-  if (error instanceof Anthropic.AuthenticationError) return "The Anthropic API key was not accepted. Check ANTHROPIC_API_KEY in .env.local.";
+  if (error instanceof Anthropic.AuthenticationError) return `The Anthropic API key was not accepted. ${checkOwnKey("ANTHROPIC_API_KEY")}`;
   if (error instanceof Anthropic.PermissionDeniedError) return "This Anthropic API key is not allowed to use that model.";
-  if (error instanceof Anthropic.NotFoundError) return `The model "${MODEL_MAIN}" was not found. Check MODEL_MAIN in .env.local.`;
+  if (error instanceof Anthropic.NotFoundError) return `The model "${MODEL_MAIN}" was not found. ${checkOwnKey("MODEL_MAIN")}`;
   if (error instanceof Anthropic.RateLimitError) return "The AI is rate-limited right now. Wait a minute and try again.";
   if (error instanceof Anthropic.APIConnectionError) return "Could not reach the AI service. Check your internet connection.";
   if (error instanceof Anthropic.APIError) return `The AI service returned an error (${error.status ?? "unknown"}). Try again shortly.`;

@@ -8,6 +8,7 @@ import { getActiveContent } from "@/lib/vault/active";
 import { client, cloudRequest, ollamaClient, MODEL, hasApiKey, buildWikiSystemPrompt } from "@/lib/claude";
 import type { DiagMCQ, DiagSA } from "@/lib/diagnostic-types";
 import { shuffleInPlace, shuffleMcqOptions, shuffledCopy } from "@/lib/diagnostic-shuffle";
+import { needOwnKey } from "@/lib/ai/keys";
 
 /** Fewer usable questions than this and the test is not worth sitting. */
 const MIN_MCQS = 15;
@@ -170,7 +171,7 @@ export async function GET(req: NextRequest) {
   const isLocal = !!model && !model.includes("/");
   if (!isLocal && !hasApiKey()) {
     return NextResponse.json(
-      { error: "Add OPENROUTER_API_KEY or OPENAI_API_KEY to .env.local, or choose a local Ollama model." },
+      { error: needOwnKey("OPENROUTER_API_KEY or OPENAI_API_KEY") },
       { status: 503 }
     );
   }

@@ -5,6 +5,7 @@ import { client, cloudRequest, hasApiKey, MODEL, ollamaClient } from "@/lib/clau
 import { smallLocalModel } from "./local-models";
 import { DEFAULT_CLOUD_MODEL_ID } from "@/lib/model-policy";
 import { describeClaudeError, hasClaude, MODEL_MAIN } from "./claude-tutor";
+import { needOwnKey } from "@/lib/ai/keys";
 
 const MAX_OUTPUT_TOKENS = 16000;
 const REQUEST_TIMEOUT_MS = 150_000;
@@ -60,5 +61,5 @@ export async function completeText(system: string, user: string): Promise<Comple
       console.error(`AI request to ${attempt.model} failed`, error);
     }
   }
-  return { ok: false, error: "No AI is available right now. Check OPENROUTER_API_KEY and AI_MODEL in .env.local." };
+  return { ok: false, error: needOwnKey("ANTHROPIC_API_KEY or OPENROUTER_API_KEY") };
 }

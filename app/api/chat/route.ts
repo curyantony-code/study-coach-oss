@@ -8,6 +8,7 @@ import { dailyTokenLimitForModel, isLocalModel } from "@/lib/token-limits";
 
 const STREAM_HEADERS = { "Content-Type": "text/plain; charset=utf-8", "Transfer-Encoding": "chunked" };
 import { NextRequest, NextResponse } from "next/server";
+import { needOwnKey } from "@/lib/ai/keys";
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
@@ -27,7 +28,7 @@ export async function POST(req: NextRequest) {
   const useClaude = hasClaude() && (!model || isClaudeModel(model));
   if (!isLocal && !useClaude && !hasApiKey()) {
     return NextResponse.json(
-      { error: "No AI backend available. Add ANTHROPIC_API_KEY to .env.local, or start Ollama locally." },
+      { error: needOwnKey("ANTHROPIC_API_KEY or OPENROUTER_API_KEY") },
       { status: 503 }
     );
   }

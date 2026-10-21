@@ -61,7 +61,11 @@ Markdown and plain-text notes need nothing extra.
 ### AI features (optional)
 
 Study Coach works without AI. AI adds the tutor chat, teach-back grading, AI quizzes and
-better card wording. The cheapest option is free:
+better card wording.
+
+**Study Coach does not come with an AI key.** Each person uses their own, so any AI costs are
+yours and your notes go only to the provider you pick. AI features stay switched off until you
+add a key. The cheapest option is free:
 
 1. Make a free key at [openrouter.ai/keys](https://openrouter.ai/keys) (free models cost nothing).
 2. Create a plain text file called `settings.env` in the app's data folder:

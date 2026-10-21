@@ -1,6 +1,7 @@
 // YouTube's official search (Data API v3). Needs a free API key from Google; without one
 // the app offers ready-made YouTube search links instead.
 import { z } from "zod";
+import { checkOwnKey } from "@/lib/ai/keys";
 
 const DEFAULT_BASE = "https://www.googleapis.com/youtube/v3";
 const MAX_RESULTS = 10;
@@ -72,7 +73,7 @@ async function getJson(url: URL, fetchFn: typeof fetch): Promise<unknown> {
     throw new VideoSearchError("YouTube's daily search allowance for your key is used up, or the key is not allowed to search. It resets overnight.");
   }
   if (response.status === 400 || response.status === 401) {
-    throw new VideoSearchError("YouTube did not accept the API key. Check YOUTUBE_API_KEY in .env.local.");
+    throw new VideoSearchError(`YouTube did not accept the API key. ${checkOwnKey("YOUTUBE_API_KEY")}`);
   }
   if (!response.ok) throw new VideoSearchError(`YouTube returned an error (${response.status}). Try again shortly.`);
   return response.json();

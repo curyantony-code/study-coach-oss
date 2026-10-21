@@ -3,6 +3,7 @@ import { getAllPages } from "@/lib/wiki";
 import { tutorCourse } from "@/lib/course";
 import { getActiveContent } from "@/lib/vault/active";
 import { client, MODEL, buildWikiSystemPrompt, buildSmartContext, hasApiKey } from "@/lib/claude";
+import { needOwnKey } from "@/lib/ai/keys";
 
 const TIER_PROMPTS: Record<string, string> = {
   summary: `Create concise study notes (bullet points, key terms bolded). Focus on the most testable facts. 3–5 bullets per major concept. Max 400 words.`,
@@ -17,7 +18,7 @@ export async function GET(req: NextRequest) {
   const model = searchParams.get("model") || MODEL;
 
   if (!hasApiKey()) {
-    return new Response("No API key configured. Set OPENROUTER_API_KEY or OPENAI_API_KEY.", { status: 503 });
+    return new Response(needOwnKey("OPENROUTER_API_KEY or OPENAI_API_KEY"), { status: 503 });
   }
 
   const active = await getActiveContent();

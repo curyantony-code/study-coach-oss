@@ -5,6 +5,7 @@ import { tutorCourse } from "@/lib/course";
 import { getActiveContent } from "@/lib/vault/active";
 import { client, ollamaClient, MODEL, hasApiKey, buildWikiSystemPrompt } from "@/lib/claude";
 import type { SaGradeItem, SaGradeResult } from "@/lib/diagnostic-types";
+import { needOwnKey } from "@/lib/ai/keys";
 
 
 function saStrictnessGuide(level: number): string {
@@ -43,7 +44,7 @@ export async function POST(req: NextRequest) {
   const isLocal = !!model && !model.includes("/");
   if (!isLocal && !hasApiKey()) {
     return NextResponse.json(
-      { error: "Add OPENROUTER_API_KEY or OPENAI_API_KEY to .env.local, or choose a local Ollama model." },
+      { error: needOwnKey("OPENROUTER_API_KEY or OPENAI_API_KEY") },
       { status: 503 }
     );
   }

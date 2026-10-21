@@ -29,6 +29,8 @@ STUDY_DB_PATH=/tmp/study-coach-dev.db npm run dev
   [docs/question-rules.md](docs/question-rules.md).
 - **Keep the card rules and the note format in step.** If you change `lib/vault/cards/`,
   update [docs/vault-format-prompt.md](docs/vault-format-prompt.md).
+- **Users bring their own AI keys.** Never add a shared, default or built-in key, and never
+  call a paid service without the user's own key.
 - **AI stays optional and cheap.** Prefer code over an AI call. Default to free or small
   models; local models must be 4B parameters or smaller.
 - **Privacy first.** No telemetry, analytics or accounts. Nothing leaves the computer except

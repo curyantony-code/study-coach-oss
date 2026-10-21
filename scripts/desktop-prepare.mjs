@@ -3,6 +3,7 @@
 import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
+import { scanForKeys } from "./no-keys.mjs";
 
 const root = path.resolve(import.meta.dirname, "..");
 const standalone = path.join(root, ".next", "standalone");
@@ -24,5 +25,9 @@ if (process.platform === "darwin") {
   }
 }
 // The build copies the project's own data and settings files along; a packaged app must not carry them.
-for (const leftover of ["data", ".env.local", ".env", "desktop", "scripts", "tests", "dist", "coverage"]) fs.rmSync(path.join(standalone, leftover), { recursive: true, force: true });
+for (const leftover of ["data", "desktop", "scripts", "tests", "dist", "coverage"]) fs.rmSync(path.join(standalone, leftover), { recursive: true, force: true });
+// Every person uses their own AI key, so no settings file of any kind may ship.
+for (const name of fs.readdirSync(standalone)) if (/^\.env(\..+)?$/.test(name)) fs.rmSync(path.join(standalone, name), { force: true });
+const leaks = scanForKeys(standalone);
+if (leaks.length > 0) throw new Error(`Refusing to package an app that carries keys or settings:\n${leaks.join("\n")}`);
 console.log(`Ready: ${standalone}`);
